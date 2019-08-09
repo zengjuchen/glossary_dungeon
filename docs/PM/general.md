@@ -6,3 +6,13 @@ Balance the start-up attribute for all players.
 * total initial attributes points corresponds to Gaussian distribution.
 * different time pause for different atk speed
 * print newline for attack defender role switch
+
+
+---
+
+Add multiple player
+
+
+---
+
+Add unique identifier to every player object

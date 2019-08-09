@@ -1,44 +1,36 @@
 import time
+import random
+from utils.debug import debug_print
 
 STANDARD_PAUSE = 1
 LAST_ATTACKER = None
 
 
-def start_battle(p1, p2, display_speed=1):
-    while p1.hp > 0 and p2.hp > 0:
-        attacker, defender = allocate_role(p1, p2)
-        defender.atk_counter += defender.atk_speed
-        defender.hp -= attacker.atk
-        rendering(attacker, defender, display_speed=display_speed)
+def battle(player_list):
+    while True:
+        if len(player_list) == 1:
+            print("%s win the battle" % player_list[0].name)
+            break
+
+        initiator = min(player_list, key=lambda x: x.atk_counter)
+        # TODO Can abstract to function later
+        skill = random.choice(initiator.skill_list)
+        # TODO choose_bearer and apply_action can combine
+        bearer_list = [i for i in player_list if i != initiator]
+        bearer = random.choice(bearer_list)
+
+        #debug_print([initiator.name, bearer.name], tag="DEBUG INI-BEAR")
+        logs = skill.orchestrate_actions(initiator, bearer)
+        for log in logs:
+            animation_pause(initiator.atk_speed, log)
+        player_list = [i for i in player_list if i.hp > 0]
+        #debug_print([i.name for i in player_list])
 
 
-def allocate_role(p1, p2):
-    """
-        决定谁是攻击者，谁是防御者
-    """
-    participants = [p1, p2]
-    attacker = max(participants, key=lambda x: x.atk_counter)
-    del participants[participants.index(attacker)]
-    defender = participants[0]
-
-    return attacker, defender
-
-
-def rendering(attacker, defender, display_speed):
-    global LAST_ATTACKER
-    if LAST_ATTACKER != attacker:
-        print('')
-        LAST_ATTACKER = attacker
-    animation_pause(attacker.atk_speed, display_speed)
-    print("{attacker.name} attacks {defender.name}, deals {attacker.atk} damage, {defender.name} has {defender.hp} hp left".format(attacker=attacker, defender=defender))
-
-    if defender.hp < 0:
-        print("{defender.name} was defeated, {attacker.name} win".format(defender=defender, attacker=attacker))
-
-
-def animation_pause(atk_speed, display_speed):
+def animation_pause(atk_speed, log, display_speed=1):
     """
         decide How many seconds to pause between each round
     """
     pause_time = STANDARD_PAUSE/atk_speed * display_speed
     time.sleep(pause_time)
+    print(log)

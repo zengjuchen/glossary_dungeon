@@ -1,14 +1,19 @@
-from logics.battle import start_battle
-from models.player import Player
+from logics.battle import battle
+from models.role import Role
+
 
 DEBUG = True
+player_list = []
 
 while True:
-    p1_name = input("Type name for player A:")
-    p2_name = input("Type name for player B:")
-    p1 = Player(p1_name)
-    p2 = Player(p2_name)
-    if DEBUG:
-        print(p1.__dict__)
-        print(p2.__dict__)
-    start_battle(p1, p2)
+    command = input("Type random name to add new player, type 'start' to start battle:")
+    if command not in ["start", "'start'", '"start"']:
+        player = Role(command)
+        player_list.append(player)
+    else:
+        if DEBUG:
+            for player in player_list:
+                print(player.__dict__)
+
+        battle(player_list)
+        break
