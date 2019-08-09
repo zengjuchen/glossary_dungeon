@@ -8,44 +8,39 @@ import random
 from models.base import Base
 from models.skill import Skill
 
-INIT_ATTR_RANGE = [5]*1 + [6]*2 + [7]*3 + [8]*4 + [9]*3 + [10]*2 + [11]*1
-MAX_ATK = 10
-MAX_ATK_SPEED = 10
-MAX_HP_BASE = 10
+ATTR_RANGE_POOL = [5] * 1 + [6] * 2 + [7] * 3 + [8] * 4 + [9] * 3 + [10] * 2 + [11] * 1
 
+INIT_ATTR_RANGES = {
+   'hp': (1, 20),
+   'atk': (1, 10),
+   'atk_speed': (1, 10),
+}
+
+ATTR_FACTORS = {
+   'hp': 5,
+   'critical_hit_damage': 10,
+}
 
 class Role(Base):
 
     HP_FACTOR = 5
     CRITICAL_DAMAGE_FACTOR = 10
+    INIT_ATTR_LIST = ['hp', 'atk', 'atk_speed', 'critical_hit_damage', 'critical_hit_chance']
 
     def __init__(self, name, **kwargs):
+        super().__init__()
 
         self.name = name
-        self.attrs = random.choice(INIT_ATTR_RANGE)
-        self.remain_attrs = self.attrs
-
-        # BASIC ATTR ACQUISITION
-        self.atk = random.choice(range(1, min([MAX_ATK, self.remain_attrs + 1 if self.remain_attrs > 2 else 2])))
-        self.remain_attrs -= self.atk
-
-        self.atk_speed = random.choice(range(1, min([MAX_ATK_SPEED, self.remain_attrs + 1 if self.remain_attrs > 2 else 2])))
-        self.remain_attrs -= self.atk_speed
-
-        self.hp = random.choice(range(1, min([MAX_HP_BASE, self.remain_attrs + 1 if self.remain_attrs > 2 else 2]))) * self.HP_FACTOR
-        self.remain_attrs -= int(self.hp/self.HP_FACTOR)
-
-        # ADVANCE ATTR ACQUISITION
-
-        self.critical_damage_chance = random.choice(range(0, self.remain_attrs + 1 if self.remain_attrs > 0 else 1)) * self.CRITICAL_DAMAGE_FACTOR
-        self.remain_attrs -= int(self.critical_damage_chance/self.HP_FACTOR)
-
-        self.critical_damage_ratio = random.choice(range(0, self.remain_attrs + 1 if self.remain_attrs > 0 else 1))
-        self.remain_attrs -= self.critical_damage_ratio
-        self.dodge_chance = random.choice(range(0, self.remain_attrs + 1 if self.remain_attrs > 0 else 1)) * self.CRITICAL_DAMAGE_FACTOR
-        self.remain_attrs -= int(self.dodge_chance/self.HP_FACTOR)
-
         # compute whose turn to attack
         self.atk_counter = 0
-
         self.skill_list = [Skill()]
+
+        self.init_attrs = self.remain_attrs = random.choice(ATTR_RANGE_POOL)
+        for attr in self.INIT_ATTR_LIST:
+            min_attr_val, max_attr_val = INIT_ATTR_RANGES.get(attr, (0, 9999))
+            if self.remain_attrs == min_attr_val:
+                attr_val = min_attr_val
+            else:
+                attr_val = random.choice(range(min_attr_val, min([max_attr_val, self.remain_attrs])))
+            self.remain_attrs -= attr_val
+            self[attr] = attr_val * ATTR_FACTORS.get(attr, 1)
