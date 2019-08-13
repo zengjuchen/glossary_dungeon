@@ -18,11 +18,13 @@ class Skill(Base):
         for k, v in kwargs:
             self.__dict__[k] = v
 
-    # TODO
+    # TODO 扩展为支持multiple action, 或者取消, 目前Skill只有一个Action, 将来想扩展为多个
+    # NOTE 目前Skill和Action承担的职责其实有重合
     def orchestrate_actions(self, initiater, target):
         action = Action(initiater=initiater, target=target, value=initiater.atk)
         action_logs = action.apply()
         return action_logs
+
 
 class Action(Base):
 

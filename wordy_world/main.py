@@ -1,19 +1,20 @@
 from logics.battle import battle
 from models.role import Role
+from logics.interface import execute
 
 
-DEBUG = True
-player_list = []
+def start_game():
+    current_interface = "interface.main"
+    chosen_option = None
+    print("\nWelcome to worldy world! May you enjoy your adventure!\n"
+              "To quit game, type quit then press ENTER KEY.\n")
 
-while True:
-    command = input("Type random name to add new player, type 'start' to start battle:")
-    if command not in ["start", "'start'", '"start"']:
-        player = Role(command)
-        player_list.append(player)
-    else:
-        if DEBUG:
-            for player in player_list:
-                print(player.__dict__)
+    while True:
+        hints, current_interface = execute(current_interface, chosen_option)
+        chosen_option = input(hints)
+        if chosen_option in ['exit', 'EXIT', 'quit', 'Quit']:
+            break
 
-        battle(player_list)
-        break
+
+if __name__ == "__main__":
+    start_game()

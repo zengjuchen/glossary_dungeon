@@ -1,12 +1,15 @@
 import time
 import random
+import settings
 from utils.debug import debug_print
 
 STANDARD_PAUSE = 1
-LAST_ATTACKER = None
 
 
 def battle(player_list):
+    if not player_list:
+        player_list = settings.player_list
+    player_list = [i for i in player_list if i.hp > 0]
     while True:
         if len(player_list) == 1:
             print("%s win the battle" % player_list[0].name)
@@ -22,15 +25,11 @@ def battle(player_list):
         #debug_print([initiator.name, bearer.name], tag="DEBUG INI-BEAR")
         logs = skill.orchestrate_actions(initiator, bearer)
         for log in logs:
-            animation_pause(initiator.atk_speed, log)
+            display_speed = getattr( settings, 'display_speed', 1)
+            pause_time = STANDARD_PAUSE/initiator.atk_speed * display_speed
+            time.sleep(pause_time)
+            print(log)
         player_list = [i for i in player_list if i.hp > 0]
         #debug_print([i.name for i in player_list])
+    return ("battle ends", "interface.main")
 
-
-def animation_pause(atk_speed, log, display_speed=1):
-    """
-        decide How many seconds to pause between each round
-    """
-    pause_time = STANDARD_PAUSE/atk_speed * display_speed
-    time.sleep(pause_time)
-    print(log)

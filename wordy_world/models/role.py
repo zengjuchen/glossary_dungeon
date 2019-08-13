@@ -38,9 +38,9 @@ class Role(Base):
         self.init_attrs = self.remain_attrs = random.choice(ATTR_RANGE_POOL)
         for attr in self.INIT_ATTR_LIST:
             min_attr_val, max_attr_val = INIT_ATTR_RANGES.get(attr, (0, 9999))
-            if self.remain_attrs == min_attr_val:
-                attr_val = min_attr_val
+            if self.remain_attrs <= min_attr_val:
+                extra_attr_val = 0
             else:
-                attr_val = random.choice(range(min_attr_val, min([max_attr_val, self.remain_attrs])))
-            self.remain_attrs -= attr_val
-            self[attr] = attr_val * ATTR_FACTORS.get(attr, 1)
+                extra_attr_val = random.choice(range(min_attr_val, min([max_attr_val, self.remain_attrs])))
+            self.remain_attrs -= extra_attr_val
+            self[attr] = (min_attr_val + extra_attr_val) * ATTR_FACTORS.get(attr, 1)
