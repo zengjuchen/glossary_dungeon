@@ -25,7 +25,8 @@ class Role(Base):
 
     HP_FACTOR = 5
     CRITICAL_DAMAGE_FACTOR = 10
-    INIT_ATTR_LIST = ['hp', 'atk', 'atk_speed', 'critical_hit_damage', 'critical_hit_chance']
+    # TODO ADD: 'critical_hit_damage', 'critical_hit_chance'
+    INIT_ATTR_LIST = ['hp', 'atk', 'atk_speed']
 
     def __init__(self, name, **kwargs):
         super().__init__()

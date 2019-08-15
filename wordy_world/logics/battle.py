@@ -12,6 +12,9 @@ def battle(player_list):
     player_list = [i for i in player_list if i.hp > 0]
     while True:
         if len(player_list) == 1:
+            winner = player_list[0]
+            winner.is_winner = True
+            winner.hp = 0
             print("%s win the battle" % player_list[0].name)
             break
 
@@ -29,6 +32,8 @@ def battle(player_list):
             pause_time = STANDARD_PAUSE/initiator.atk_speed * display_speed
             time.sleep(pause_time)
             print(log)
+        if bearer.hp <= 0:
+            bearer.is_winner = False
         player_list = [i for i in player_list if i.hp > 0]
         #debug_print([i.name for i in player_list])
     return ("battle ends", "interface.main")
